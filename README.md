@@ -1,5 +1,6 @@
 # MotionCam
 Image frequency analyzer
+<img src="motioncamicon.png" width="100" />
 
 Following app uses captured frames (center point from the middle and its color) to analize their potential freqency. Those can be useful when looking at stroboscopic light or rotating parts
 
@@ -13,9 +14,16 @@ TODO
 * points from the frame - number to be optional
 
 
-Some images of the app"
+Some images of the app:
 
-<img src="lm.png" width="400" />
+
 <BR><BR>
-A sample label that is genuine:
-<img src="lm1_genuine_label.png" width="150" />
+<img src="20211030_143553.gif" width="400" />
+
+  <BR><BR>
+<img src="20211030_143704.gif" width="400" />
+
+  
+  AVAILABLE ON PLAY STORE
+ 
+  https://play.google.com/store/apps/details?id=com.diplabs.motioncam3&hl=pl&gl=US
