@@ -28,11 +28,15 @@ Some images of the app:
  
   https://play.google.com/store/apps/details?id=com.diplabs.motioncam3&hl=pl&gl=US
 
+
+LANGUAGES:
+* JAVA + ANDROID
     
-    CREDITS:
-    * CHARTS: MPAndroidChart  https://github.com/PhilJay/MPAndroidChart
-    * MATH: commons-math3  https://commons.apache.org/proper/commons-math/
-    * IMAGE PROCESSING: OPENCV-ANDROID 4  https://opencv.org/android/
+CREDITS:
+* CHARTS: MPAndroidChart  https://github.com/PhilJay/MPAndroidChart
+* MATH: commons-math3  https://commons.apache.org/proper/commons-math/
+* IMAGE PROCESSING: OPENCV-ANDROID 4  https://opencv.org/android/
+
     
     
     
