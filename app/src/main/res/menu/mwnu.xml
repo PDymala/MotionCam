@@ -5,13 +5,13 @@
 
 
     <item  android:id="@+id/red"
-        android:title="red"/>
+        android:title="Red filter"/>
     <item  android:id="@+id/green"
-        android:title="green"/>
+        android:title="Green filter"/>
     <item  android:id="@+id/blue"
-        android:title="blue"/>
+        android:title="Blue filter"/>
     <item  android:id="@+id/gray"
-        android:title="gray"/>
+        android:title="Grayscale filter"/>
 
 
 </menu>
