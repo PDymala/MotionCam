@@ -46,26 +46,22 @@ import org.opencv.imgproc.Imgproc;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.DoubleSummaryStatistics;
+import java.util.IntSummaryStatistics;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
 import static android.content.ContentValues.TAG;
+import static org.opencv.core.Core.min;
 import static org.opencv.core.Core.mixChannels;
 import static org.opencv.core.Core.split;
 import static org.opencv.core.CvType.CV_8UC1;
 import static org.opencv.core.CvType.CV_8UC3;
 
-public class MainActivity extends AppCompatActivity implements CameraBridgeViewBase.CvCameraViewListener2, PopupMenu.OnMenuItemClickListener {
+public class MainActivity extends AppCompatActivity implements CameraBridgeViewBase.CvCameraViewListener2, PopupMenu.OnMenuItemClickListener , Settings.SettingDialogListener{
 
-    //TODO: Dodac menu do innej ilosci pikseli analizowanych
-    //TODO: DODAC w tym samym menu ilosc FRAME'ów do analizy (UWAGA, DO FPS TEZ!)
-    //TODO: CZY DA SIE ZMIENIC NAZWE?  taka juz istnieje...
-
-    // JAVA camera 2 dziala. jest zoom! :) ale cos fpsy nizsze niz przy camera 1 (?) Podobnot ak ejst....
-
-
-    private static final String TAG = "FreqencyCam3";
+    private static final String TAG = "MotionCam3";
     private static final int MY_CAMERA_REQUEST_CODE = 100;
     private final int activeCamera = CameraBridgeViewBase.CAMERA_ID_BACK;
     private CustomCameraView javaCameraView;// JavaCameraView javaCameraView;
@@ -77,6 +73,9 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     private boolean cameraOn = true;
     private boolean graphOn = true;
     private int filterColorType = 3;
+    private Settings settings;
+    private int framesToAnalize = 64;
+    private double minValueOnChart = 1.0;
 
 
     @Override
@@ -204,50 +203,6 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
         mRgba = inputFrame.rgba();
 
-//        Mat tempMat = new Mat(mRgba.rows(), mRgba.cols(), mRgba.type());
-
-
-        // po co color modifier podstawowy skoro mozna to z kanalow wyciagnac.
-//        switch (filterColorType){
-//            case 0:
-//
-//                colorModifierMat(mRgba).copyTo(tempMat);
-//                break;
-//            case 1:
-//
-//                colorModifierMat(mRgba).copyTo(tempMat);
-//                break;
-//            case 2:
-//
-//                colorModifierMat(mRgba).copyTo(tempMat);
-//                break;
-//            case 3:
-//
-//             grayScaleMod(mRgba).copyTo(tempMat);;
-//                break;
-//            default:
-//           grayScaleMod(mRgba).copyTo(tempMat);;
-//                break;
-//        }
-
-
-        //mozna wszystko zawrzec w orginale
-//        switch (filterColorType) {
-//            case 0:
-//            case 2:
-//            case 1:
-//
-//                mRgba.copyTo(tempMat);
-//                break;
-//            case 3:
-//
-//                grayScaleMod(mRgba).copyTo(tempMat);
-//                break;
-//            default:
-//                grayScaleMod(mRgba).copyTo(tempMat);
-//                break;
-//        }
-
 
         ArrayList<Mat> dst = new ArrayList<>(3);
 
@@ -259,43 +214,44 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         }
 
 
-        if (graphOn) {
+        switch (filterColorType) {
+            case 0:
 
-
-            switch (filterColorType) {
-                case 0:
-
-//                    pushValueToQueue(mRgba.get(mRgba.rows() / 2, mRgba.cols() / 2)[0]);
+                if (graphOn) {
                     pushValueToQueue(dst.get(0).get(mRgba.rows() / 2, mRgba.cols() / 2)[0]);
-                    dst.set(1,Mat.zeros(mRgba.size(),dst.get(1).type()));
-                    dst.set(2,Mat.zeros(mRgba.size(),dst.get(2).type()));
+                }
+                dst.set(1, Mat.zeros(mRgba.size(), dst.get(1).type()));
+                dst.set(2, Mat.zeros(mRgba.size(), dst.get(2).type()));
 
-                    Core.merge(dst,mRgba);
+                Core.merge(dst, mRgba);
 
-                    break;
-                case 1:
+                break;
+            case 1:
 
-//                    pushValueToQueue(mRgba.get(mRgba.rows() / 2, mRgba.cols() / 2)[1]);
+
+                if (graphOn) {
                     pushValueToQueue(dst.get(1).get(mRgba.rows() / 2, mRgba.cols() / 2)[0]);
-                    dst.set(0,Mat.zeros(mRgba.size(),dst.get(0).type()));
-                    dst.set(2,Mat.zeros(mRgba.size(),dst.get(2).type()));
+                }
+                dst.set(0, Mat.zeros(mRgba.size(), dst.get(0).type()));
+                dst.set(2, Mat.zeros(mRgba.size(), dst.get(2).type()));
 
-                    Core.merge(dst,mRgba);
+                Core.merge(dst, mRgba);
 
 
-                    break;
-                case 2:
+                break;
+            case 2:
 
-//                    pushValueToQueue(mRgba.get(mRgba.rows() / 2, mRgba.cols() / 2)[2]);
+                if (graphOn) {
                     pushValueToQueue(dst.get(2).get(mRgba.rows() / 2, mRgba.cols() / 2)[0]);
-                    dst.set(0,Mat.zeros(mRgba.size(),dst.get(0).type()));
-                    dst.set(1,Mat.zeros(mRgba.size(),dst.get(1).type()));
+                }
+                dst.set(0, Mat.zeros(mRgba.size(), dst.get(0).type()));
+                dst.set(1, Mat.zeros(mRgba.size(), dst.get(1).type()));
 
-                    Core.merge(dst,mRgba);
+                Core.merge(dst, mRgba);
 
-                    break;
-                case 3:
-                    //Linear luminance. Can be change to any other grayscale coversion
+                break;
+            case 3:
+                //Linear luminance. Can be change to any other grayscale coversion
 //                    pushValueToQueue(
 //                            (0.2126 * mRgba.get(mRgba.rows() / 2, mRgba.cols() / 2)[0]) +
 //                                    (0.7152 * mRgba.get(mRgba.rows() / 2, mRgba.cols() / 2)[1]) +
@@ -303,44 +259,25 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
 //
 //                    );
 
+                if (graphOn) {
                     pushValueToQueue(mRgba.get(mRgba.rows() / 2, mRgba.cols() / 2)[0]);
+                }
 
-                    break;
-                default:
-//                    pushValueToQueue(
-//                            (0.2126 * mRgba.get(mRgba.rows() / 2, mRgba.cols() / 2)[0]) +
-//                                    (0.7152 * mRgba.get(mRgba.rows() / 2, mRgba.cols() / 2)[1]) +
-//                                    (0.0722 * mRgba.get(mRgba.rows() / 2, mRgba.cols() / 2)[2])
-//
-//                    );
+                break;
+            default:
+
+                if (graphOn) {
                     pushValueToQueue(mRgba.get(mRgba.rows() / 2, mRgba.cols() / 2)[0]);
+                }
 
-                    break;
-            }
+                break;
 
 
         }
 
 
-
         if (cameraOn) {
-
-            switch (filterColorType) {
-                case 0:
-//                    return dst.get(0);
-                    return mRgba;
-
-                case 1:
-                                       return mRgba;
-//                    return dst.get(1);
-                case 2:
-                    return mRgba;
-//                    return dst.get(2);
-                default:
-                    return mRgba;
-
-            }
-
+            return mRgba;
         } else {
             return null;
         }
@@ -350,6 +287,10 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     Queue<Double> valuesToAnalize = new LinkedList<Double>();
     Queue<Double> FPStoAnalize = new LinkedList<Double>();
 
+    /**
+     * Pushes values to thread that analizes
+     * @param value
+     */
     public void pushValueToQueue(double value) {
         synchronized (monitor) {
 
@@ -364,6 +305,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     private Thread thread;
 
 
+    //Thread that listens to values that are being pushed
     public void startListening() {
         // background thread start
         thread = new Thread(() -> {
@@ -381,34 +323,46 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     }
 
 
+
+    /**
+     * Thread waits for certaing numer of values, then analizes them , creates a chart and pushes them to view. Then it cleans it self and wait for another bunch
+     * @throws InterruptedException
+     */
     private void analizeThread() throws InterruptedException {
 
         while (!thread.isInterrupted()) {
 
             synchronized (monitor) {
-                while (valuesToAnalize.size() < 64) {
+                while (valuesToAnalize.size() < framesToAnalize) {
                     monitor.wait();
                 }
 
-                double[] test = new double[64];
-                double[] fpsArray = new double[64];
+                double[] test = new double[framesToAnalize];
+                double[] fpsArray = new double[framesToAnalize];
 
 
-                for (int i = 0; i < 64; i++) {
+                for (int i = 0; i < framesToAnalize; i++) {
                     test[i] = valuesToAnalize.poll();
                 }
 
-                for (int i = 0; i < 64; i++) {
+                for (int i = 0; i < framesToAnalize; i++) {
                     fpsArray[i] = FPStoAnalize.poll();
                 }
 
 
-                Phasor[] testDFT = singlalTransform(test, average(fpsArray)); // do pobrania fps;
+
+                //https://stackoverflow.com/questions/1484347/finding-the-max-min-value-in-an-array-of-primitives-using-java
+                DoubleSummaryStatistics statFps = Arrays.stream(fpsArray).summaryStatistics();
+                Double averFps = statFps.getAverage();
+
+                Phasor[] testDFT = singlalTransform(test, averFps); // do pobrania fps;
 
 
                 double[] ampParcel = new double[testDFT.length / 2];
 
                 double[] freqParcel = new double[testDFT.length / 2];
+
+
 
 
                 for (int i = 0; i < testDFT.length / 2; i++) {
@@ -419,12 +373,24 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
                     freqParcel[i] = testDFT[i].getFreq();
 
                 }
+                //show on chart only those values that are above % of max value
+                //https://stackoverflow.com/questions/1484347/finding-the-max-min-value-in-an-array-of-primitives-using-java
+                DoubleSummaryStatistics statAmp = Arrays.stream(ampParcel).summaryStatistics();
+                 Double maxAmp = statAmp.getMax();
 
 
+                //pushing to chart...
                 List<Entry> entries = new ArrayList<Entry>();
                 for (int i = 5; i < ampParcel.length; i++) {
 
-                    entries.add(new Entry((float) freqParcel[i], (float) ampParcel[i]));
+                    if (ampParcel[i] < maxAmp*(1.0-minValueOnChart)){
+                        entries.add(new Entry((float) freqParcel[i], (float) 0.0));
+                    } else{
+
+                        entries.add(new Entry((float) freqParcel[i], (float) ampParcel[i]));
+                    }
+
+
 
                 }
 
@@ -507,7 +473,6 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         }
 
         FastFourierTransformer.transformInPlace(data, DftNormalization.STANDARD, TransformType.FORWARD);
-        //System.out.println(java.util.Arrays.toString(data[0]) + "\n");
         Phasor[] temp = new Phasor[data[0].length];
         for (int i = 0; i < data[0].length; i++) {
 
@@ -524,17 +489,6 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     }
 
 
-    public double average(double[] data) {
-        double sum = 0;
-        double average;
-
-        for (int i = 0; i < data.length; i++) {
-            sum = sum + data[i];
-        }
-        average = (double) sum / data.length;
-        return average;
-    }
-
 
     public Mat grayScaleMod(Mat inputMat) {
 
@@ -545,54 +499,24 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         return tempMat;
     }
 
+    public void flashOnOff(View view) throws CameraAccessException {
 
-//    int initialColor = 0xffffff;
-//    int filterColor = initialColor;
-//    public Mat colorModifierMat(Mat inputMat){
-//        // Log.i(TAG, "colorModifierMat: " +inputMat.type());
-//        double redPercent = Color.red(filterColor) / 255.0 ;
-//        double greenPercent = Color.green(filterColor) / 255.0;
-//        double bluePercent = Color.blue(filterColor) /255.0;
-//
-////    Log.i(TAG, "colorModifierMat: "+inputMat.cols() + "cols" + inputMat.rows() + "rows");
-//
-//        inputMat.convertTo(inputMat, CvType.CV_64FC3);
-////    inputMat.convertTo(inputMat, CvType.CV_8UC3);
-//        int size = (int) (inputMat.total() * inputMat.channels());
-//        double[] temp = new double[size];
-////    Log.i(TAG, "colorModifierMat: size" + size);
-//
-//        inputMat.get(0, 0, temp);
-//        for (int i = 0; i < size-4; i=i+4)
-//        {
-//
-//            temp[i] =  (temp[i]*redPercent);
-//
-//            temp[i+1] =  (temp[i+1]*greenPercent);
-//            temp[i+2] =  (temp[i+2] *bluePercent);
-//            temp[i+3] =  255;
-//        }
-//
-//        inputMat.put(0, 0, temp);
-//        inputMat.convertTo(inputMat, CvType.CV_8UC4);
-//        return inputMat;
-//    }
+        javaCameraView.toggleFlashMode();
+    }
 
+    //Data from menu
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         int id = item.getItemId();
         switch (id) {
             case R.id.red:
                 filterColorType = 0;
-//                filterColor = 0xff0000;
                 return true;
             case R.id.green:
                 filterColorType = 1;
-//                filterColor = 0x00ff00;
-               return true;
+                return true;
             case R.id.blue:
                 filterColorType = 2;
-//                filterColor = 0x0000ff;
                 return true;
             case R.id.gray:
                 filterColorType = 3;
@@ -603,19 +527,19 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         }
     }
 
-    public void flashOnOff(View view) throws CameraAccessException {
 
-        javaCameraView.toggleFlashMode();
+
+
+    //Data from Settings
+    @Override
+    public void applySettings(int framesToAnalize, double minValueOnChart) {
+        this.framesToAnalize = framesToAnalize;
+        this.minValueOnChart= minValueOnChart;
     }
 
-
-    public int getIntFromColor(int R, int G, int B) {
-
-        R = (R << 16) & 0x00FF0000;
-        G = (G << 8) & 0x0000FF00;
-        B = B & 0x000000FF;
-
-        return 0xFF000000 | R | G | B;
+    public void openSettings(View view) {
+        settings = new Settings(framesToAnalize,minValueOnChart);
+        settings.show(getSupportFragmentManager(), "Settings");
     }
 
 

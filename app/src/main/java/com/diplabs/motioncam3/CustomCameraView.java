@@ -165,7 +165,6 @@ boolean enable = true;
 
 
 
-
     public final class Zoom
     {
         private static final float DEFAULT_ZOOM_FACTOR = 1.0f;
@@ -222,6 +221,8 @@ boolean enable = true;
             builder.set(CaptureRequest.SCALER_CROP_REGION, this.mCropRegion);
         }
     }
+
+
 
 
 
