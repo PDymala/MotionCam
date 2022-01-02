@@ -27,6 +27,16 @@
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.5" />
 
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/cameraView1"
+        app:layout_constraintStart_toStartOf="@+id/cameraView1"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_baseline_crop_square_24" />
+
     <com.github.mikephil.charting.charts.LineChart
         android:id="@+id/chart"
         android:layout_width="0dp"
@@ -38,23 +48,13 @@
 
     </com.github.mikephil.charting.charts.LineChart>
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/cameraView1"
-        app:layout_constraintStart_toStartOf="@+id/cameraView1"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_baseline_crop_square_24" />
-
     <ImageButton
         android:id="@+id/imageButtonColorPallete"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginBottom="16dp"
-        android:onClick="showPopupSize"
+        android:onClick="showMenuColorFilter"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@drawable/ic_baseline_palette_24" />
@@ -69,6 +69,18 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/imageButtonColorPallete"
         app:srcCompat="@drawable/ic_baseline_flash_on_24" />
+
+
+    <ImageButton
+        android:id="@+id/imageSettings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="16dp"
+        android:onClick="openSettings"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/imageButtonFlash"
+        app:srcCompat="@drawable/ic_baseline_settings_24" />
 
     <ImageButton
         android:id="@+id/imageButtonStopPlayCamView"

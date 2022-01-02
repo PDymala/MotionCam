@@ -49,7 +49,7 @@ public class JavaCamera2View extends CameraBridgeViewBase {
     public CameraDevice mCameraDevice;
     public CameraCaptureSession mCaptureSession;
     public CaptureRequest.Builder mPreviewRequestBuilder;
-    private String mCameraID;
+    public String mCameraID;
     private android.util.Size mPreviewSize = new android.util.Size(-1, -1);
 
     private HandlerThread mBackgroundThread;
