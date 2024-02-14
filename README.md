@@ -27,6 +27,9 @@ Image capturing is continuous, when it reaches certain number of frames  it run
 <BR>
 <img src="20211030_143704.gif" width="400" />
 
+<BR>
+<img src="MotionGUI.png" width="400" />
+
   
 ## Available on Play Store
  
